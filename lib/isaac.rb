@@ -3,7 +3,7 @@ require 'socket'
 module Isaac
   VERSION = '0.2.1'
 
-  Config = Struct.new(:server, :port, :password, :nick, :realname, :version, :environment, :verbose)
+  Config = Struct.new(:server, :port, :ssl, :password, :nick, :realname, :version, :environment, :verbose)
 
   def self.bot
     @bot ||= Bot.new
@@ -15,7 +15,7 @@ module Isaac
 
     def initialize(&b)
       @events = {}
-      @config = Config.new("localhost", 6667, nil, "isaac", "Isaac", 'isaac', :production, false)
+      @config = Config.new("localhost", 6667, false, nil, "isaac", "Isaac", 'isaac', :production, false)
 
       instance_eval(&b) if block_given?
     end
@@ -109,7 +109,18 @@ module Isaac
     end
 
     def connect
-      @socket = TCPSocket.open(@config.server, @config.port)
+      tcpsocket = TCPSocket.open(@config.server, @config.port)
+      if @config.ssl
+        require 'openssl'
+        ssl_context = OpenSSL::SSL::SSLContext.new()
+        ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        @socket = OpenSSL::SSL::SSLSocket.new(tcpsocket, ssl_context)
+        @socket.sync = true
+        @socket.connect
+      else
+        @socket = tcpsocket
+      end
+
       @queue = Queue.new(@socket, @bot.config.server)
       message "PASS #{@config.password}" if @config.password
       message "NICK #{@config.nick}"
