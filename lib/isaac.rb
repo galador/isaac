@@ -150,6 +150,10 @@ module Isaac
         env = { :nick => $2, :userhost => $3, :channel => $4, :message => $5 }
         type = env[:channel].match(/^#/) ? :channel : :private
         @bot.dispatch(type, env)
+      when /(^:(\S+)!(\S+) )?NOTICE (\S+) :?(.*)/
+        env = { :nick => $2, :userhost => $3, :channel => $4, :message => $5 }
+        type = env[:channel].match(/^#/) ? :chnotice : :notice
+        @bot.dispatch(type, env)
       when /(^:\S+ )?([4-5]\d\d) \S+ (\S+)/
         env = {:error => $2.to_i, :message => $2, :nick => $3, :channel => $3}
         @bot.dispatch(:error, env)
