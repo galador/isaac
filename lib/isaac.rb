@@ -11,7 +11,7 @@ module Isaac
 
   class Bot
     attr_accessor :config, :irc, :nick, :channel, :message, :userhost, :match,
-      :error
+      :error, :newnick
 
     def initialize(&b)
       @events = {}
@@ -157,7 +157,7 @@ module Isaac
         @bot.dispatch(type, env)
       when /(^:(\S+)!(\S+) )?NICK (\S+)/
         env = { :nick => $2, :userhost => $3, :newnick => $4 }
-        if env[:newnick][0] == ":"
+        if env[:newnick][0] == 58 || env[:newnick][0] == ":"
           # Seems Unreal adds a colon before nick changes.  Don't think
           # this is required by the RFC, but it's easy to fix it.  :/
           env[:newnick].gsub!(":", "")
