@@ -154,6 +154,15 @@ module Isaac
         env = { :nick => $2, :userhost => $3, :channel => $4, :message => $5 }
         type = env[:channel].match(/^#/) ? :chnotice : :notice
         @bot.dispatch(type, env)
+      when /(^:(\S+)!(\S+) )?NICK (\S+)/
+        env = { :nick => $2, :userhost => $3, :newnick => $4 }
+        if env[:newnick][0] == ":"
+          # Seems Unreal adds a colon before nick changes.  Don't think
+          # this is required by the RFC, but it's easy to fix it.  :/
+          env[:newnick].gsub!(":", "")
+        end
+        type = :nick
+        @bot.dispatch(type, env)
       when /(^:\S+ )?([4-5]\d\d) \S+ (\S+)/
         env = {:error => $2.to_i, :message => $2, :nick => $3, :channel => $3}
         @bot.dispatch(:error, env)
