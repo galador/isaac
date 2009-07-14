@@ -72,6 +72,7 @@ module Isaac
       self.nick, self.userhost, self.channel, self.error =
         env[:nick], env[:userhost], env[:channel], env[:error]
       self.message = env[:message] || ""
+      self.newnick = env[:newnick] || ""
 
       if handler = find(event, message)
         regexp, block = *handler
