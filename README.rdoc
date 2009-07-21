@@ -51,6 +51,13 @@ You can also pass the RegExp captures as block arguments:
     # `first` will contain the first regexp capture,
     # `last` the second.
   end
+  
+Finally, you can catch QUITs, JOINs, PARTs, and NICK changes with +on :quit+, +on :join+,
++on :part+, and +on :nick+.  NICK provides the old nick in +nick+ and the new nick in the
++newnick+ variable.  All three other catchers (QUITs, PARTs, and JOINs) provide the +nick+ 
+variable.  JOINs and PARTs also provide the +channel+ variables.  Finally, QUITs and PARTS
+provide a +message+ variable, if the users uses a quit or part message.
+
 
 === Defining helpers
 Helpers should not be defined in the top level, but instead using the +helpers+-constructor:
