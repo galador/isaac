@@ -159,7 +159,15 @@ module Isaac
         env = { :nick => $2, :userhost => $3, :newnick => $4 }
         type = :nick
         @bot.dispatch(type, env)
-      when /(^:(\S+)!(\S+) )?QUIT :?(.*)/i
+      when /(^:(\S+)!(\S+) )?JOIN :?(\S+)/
+        env = { :nick => $2, :userhost => $3, :channel => $4 }
+        type = :join
+        @bot.dispatch(type, env)
+      when /(^:(\S+)!(\S+) )?PART (\S+)(\s:?(\S+))?/
+        env = { :nick => $2, :userhost => $3, :channel => $4, :message => $6 }
+        type = :part
+        @bot.dispatch(type, env)
+      when /(^:(\S+)!(\S+) )?QUIT :?(.*)/
         env = { :nick => $2, :userhost => $3, :message => $4 }
         type = :quit
         @bot.dispatch(type, env)
